@@ -3,25 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@apollo/react-hooks": "^3.1.3",
-    "@material-ui/core": "^4.9.4",
     "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.4.0",
+    "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
-    "apollo-boost": "^0.4.7",
-    "firebase": "^7.9.1",
-    "graphql": "^14.6.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "3.3.1",
-    "validator": "^12.2.0"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --colors",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettify": "prettier --config .prettierrc.json --ignore-path .prettierignore --write \"src/**/*.js\"",
+    "checkPrettier": "prettier --config .prettierrc.json --ignore-path .prettierignore --check \"src/**/*.js\"",
+    "lint": "node_modules/.bin/eslint --color --ext js,jsx ./src",
+    "lintify": "node_modules/.bin/eslint --color --fix --ext js,jsx ./src",
+    "fix": "npm run prettify && npm run lintify && npm run sniff",
+    "smellsGood": "node scripts/echo \"Great success!! Your client-side code smells goooood!\" --font-color 92",
+    "sniff": "npm run checkPrettier && npm run lint && npm run smellsGood"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -39,6 +39,6 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^6.8.0"
+    "prettier": "^2.0.5"
   }
 }

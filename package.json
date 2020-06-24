@@ -1,0 +1,34 @@
+{
+  "name": "budgetize-me",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "concurrently \"npm run server-test\" \"npm run client-test\"",
+    "start": "concurrently \"npm run server-start\" \"npm run client-start\"",
+    "sniff": "concurrently \"npm run server-sniff\" \"npm run client-sniff\" && npm run smellsGood",
+    "postinstall": "concurrently \"npm run server-install\" \"npm run client-install\"",
+    "client-install": "cd client && npm install",
+    "server-install": "cd server && npm install",
+    "client-test": "cd client && npm run test -- --watchAll=false",
+    "server-test": "cd server && npm run test",
+    "client-start": "cd client && npm run start",
+    "server-start": "cd server && npm run start",
+    "client-sniff": "cd client && npm run sniff",
+    "server-sniff": "cd server && npm run sniff",
+    "smellsGood": "node scripts/echo \"Great success!! Your code smells goooood!\" --font-color 92"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tyresius92/budgetize-me.git"
+  },
+  "author": "Tyrel Clayton",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tyresius92/budgetize-me/issues"
+  },
+  "homepage": "https://github.com/Tyresius92/budgetize-me#readme",
+  "dependencies": {
+    "concurrently": "^5.2.0"
+  }
+}
