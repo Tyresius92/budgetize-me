@@ -24,6 +24,13 @@ export const UserResolvers = {
     me: () => ({ id: 1, username: 'tyresius', email: 'hello@goodbye.com' }),
   },
 
+  Mutation: {
+    signUp: (parent, { input }, { userService }) =>
+      userService.signUp(input.username, input.email, input.password),
+    signIn: (parent, { input }, { userService }) =>
+      userService.signIn(input.login, input.password),
+  },
+
   User: {
     transactions: () => [],
   },
