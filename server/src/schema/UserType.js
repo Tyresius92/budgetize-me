@@ -21,17 +21,29 @@ export const UserType = gql`
 
 export const UserResolvers = {
   Query: {
-    me: () => ({ id: 1, username: 'tyresius', email: 'hello@goodbye.com' }),
+    me: (parent, args, { me }) => me,
   },
 
   Mutation: {
-    signUp: (parent, { input }, { userService }) =>
-      userService.signUp(input.username, input.email, input.password),
-    signIn: (parent, { input }, { userService }) =>
-      userService.signIn(input.login, input.password),
+    signUp: (
+      parent,
+      { input: { username, email, password } },
+      { userService, secret }
+    ) =>
+      userService.signUp(
+        {
+          username,
+          email,
+          password,
+        },
+        secret
+      ),
+    signIn: (parent, { input }, { userService, secret }) =>
+      userService.signIn(input.login, input.password, secret),
   },
 
   User: {
-    transactions: () => [],
+    transactions: (user, args, { userService }) =>
+      userService.fetchTransactionsByUserId(user.id),
   },
 };

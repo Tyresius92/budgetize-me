@@ -2,11 +2,12 @@ import 'dotenv/config';
 import db from '../db';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { AuthenticationError, UserInputError } from 'apollo-server';
 
-const createToken = async (user, expiresIn) => {
+const createToken = async (user, secret, expiresIn) => {
   // don't encode the whole user because there might be a password on user
   const { id, email, username } = user;
-  return await jwt.sign({ id, email, username }, process.env.SECRET, {
+  return await jwt.sign({ id, email, username }, secret, {
     expiresIn,
   });
 };
@@ -19,11 +20,12 @@ const generatePasswordHash = async password => {
 const validatePassword = async (passwordHash, attemptedPassword) =>
   await bcrypt.compare(attemptedPassword, passwordHash);
 
-const createUser = async (username, email, password) => {
+export const createUser = async (username, email, password) => {
   const passwordHash = await generatePasswordHash(password);
 
   const result = await db.fetch(
-    `INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3)
+    `INSERT INTO users (username, email, password_hash) 
+    VALUES ($1, $2, $3)
     RETURNING id, username, email`,
     [username, email, passwordHash]
   );
@@ -50,14 +52,16 @@ const fetchUserByLogin = async emailOrUsername => {
 const fetchUserById = async id =>
   await db.fetch('SELECT * FROM users WHERE id = $1', [id]);
 
-const signUp = async (username, email, password) => {
+const signUp = async (signUpInput, secret) => {
+  const { username, email, password } = signUpInput;
+
   const user = await createUser(username, email, password);
-  const token = await createToken(user, '30d');
+  const token = await createToken(user, secret, '30d');
 
   return { user, token };
 };
 
-const signIn = async (login, password) => {
+const signIn = async (login, password, secret) => {
   const user = await fetchUserByLogin(login);
 
   if (!user) {
@@ -70,7 +74,7 @@ const signIn = async (login, password) => {
     throw new AuthenticationError('Invalid password');
   }
 
-  const token = await createToken(user, '30d');
+  const token = await createToken(user, secret, '30d');
 
   return {
     user,
@@ -78,4 +82,19 @@ const signIn = async (login, password) => {
   };
 };
 
-export default { signIn, signUp };
+const fetchTransactionsByUserId = async userId => {
+  const transactions = await db.fetchAll(
+    `SELECT * 
+    FROM transactions 
+    WHERE user_id = $1 
+    ORDER BY created_date DESC`,
+    [userId]
+  );
+
+  return transactions.map(transaction => ({
+    ...transaction,
+    userId: transaction.user_id,
+  }));
+};
+
+export default { signIn, signUp, fetchUserById, fetchTransactionsByUserId };
